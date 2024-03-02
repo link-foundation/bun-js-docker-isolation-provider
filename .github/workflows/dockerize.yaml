@@ -18,7 +18,7 @@ jobs:
       - name: Install latest npm
         run: npm install -g npm@latest
       - name: build
-        run: npm ci
+        run: bun install --frozen-lockfile
       - name: Display npm log
         if: ${{ failure() }}
         run: cat /home/runner/.npm/_logs/*-debug.log
