@@ -8,12 +8,11 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const memoEval = memoize(eval);
 
-Bun.eval = (code: string) => {
-  const transpiler = new Bun.Transpiler({
-      loader: "ts"
-  });
-
-  return eval(transpiler.transformSync(`eval((${code}))`));
+const bunEval = (code: string) => {
+  const transpiler = new Bun.Transpiler();
+  const codeWithEval = `eval((${code}))`
+  const transpiledCode = transpiler.transformSync(codeWithEval);
+  return eval(transpiledCode);
 }
 
 
@@ -29,7 +28,7 @@ DeepClient.resolveDependency = requireWrapper;
 const toJSON = (data) => JSON.stringify(data, Object.getOwnPropertyNames(data), 2);
 
 const makeFunction = (code: string) => {
-  const fn = Bun.eval(code);
+  const fn = bunEval(code);
   if (typeof fn !== 'function')
   {
     throw new Error("Executed handler's code didn't return a function.");
@@ -54,7 +53,7 @@ console.log(`Listening ${process.env.PORT} port`);
 
 const server = Bun.serve({
   port: process.env.PORT, // Specify the desired port
-  async fetch(req, res, next) {
+  async fetch(req, res) {
     const url = new URL(req.url);
 
     switch(url.pathname) { 
@@ -92,7 +91,7 @@ const server = Bun.serve({
           const { jwt, code, data } = JSON.parse(options as string);
           const fn = makeFunction(code);
           const deep = makeDeepClient(jwt);
-          await fn(req, res, next, { data, deep, gql, require: requireWrapper }); // Supports both sync and async functions the same way
+          await fn(req, res, { data, deep, gql, require: requireWrapper }); // Supports both sync and async functions the same way
         }
         catch(rejected)
         {
