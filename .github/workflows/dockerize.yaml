@@ -12,11 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: oven-sh/setup-bun@v1
         with:
-          node-version: 18
-      - name: Install latest npm
-        run: npm install -g npm@latest
+          bun-version: latest
       - name: build
         run: bun install --frozen-lockfile
       - name: Display npm log
