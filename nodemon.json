@@ -1,5 +1,5 @@
 {
   "watch": ["imports", "index.ts"],
   "ext": "ts",
-  "exec": "npx ts-node --esm ./index.ts"
+  "exec": "bun run ./index.ts"
 }
