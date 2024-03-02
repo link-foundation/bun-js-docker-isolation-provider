@@ -1,17 +1,10 @@
-FROM node:18
+FROM oven/bun:latest
 
-# Install required packages
-RUN apt-get update && \
-apt-get install -y ffmpeg && \
-apt-get clean && \
-rm -rf /var/lib/apt/lists/*
+COPY package.json ./
+COPY bun.lockb ./
+COPY src ./
 
-# Install the 'bun' package globally and run the 'bun-install.sh' script
-COPY bun-install.sh .
-
-RUN chmod +x bun-install.sh && \
-    ./bun-install.sh && \
-    npm install -g bun
+RUN bun install
 
 # Copy the necessary files into the container
 COPY package.json .
